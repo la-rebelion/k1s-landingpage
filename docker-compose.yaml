@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  k1s-lp:
+    container_name: k1s-lp
+    image: "${DOCKER_USER_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}"
+    restart: unless-stopped
+    env_file: ${APP_PATH}/.env
+    volumes:
+      # Getting error if mounting these folders, had to create as mounted volumes
+      - app_public:/usr/local/apache2/htdocs/
+    ports:
+      - "3000:80"
+    networks:
+      lr-network:
+        ipv4_address: ${APP_HOST}
+
+volumes:
+  app_public:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/public-html
+      o: bind
+
+networks:
+  lr-network:
+    external: true
+    ipam:
+      config:
+        - subnet: 172.18.18.0/24
+          gateway: 172.18.18.1
+
+#https://docs.docker.com/compose/environment-variables/set-environment-variables/#cli
+#docker compose --env-file .env --project-name k1s-lp up -d
+#docker compose --project-name k1s-lp up -d
+#docker network create --subnet=172.18.18.0/24 lr-network
