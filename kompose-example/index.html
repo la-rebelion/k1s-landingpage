@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 30px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .variable {
+      margin-bottom: 10px;
+    }
+
+    .name {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .value {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Environment Variables</h1>
+    
+    <script>
+      // Helper function to parse the .env file content
+      function parseEnvFile(text) {
+        var variables = {};
+        var lines = text.trim().split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (line !== '' && line.indexOf('=') !== -1) {
+            var parts = line.split('=');
+            var key = parts[0].trim();
+            var value = parts[1].trim();
+            variables[key] = value;
+          }
+        }
+        return variables;
+      }
+
+      // Fetch and parse the .env file
+      fetch('.env')
+        .then(function(response) {
+          if (response.ok) {
+            return response.text();
+          } else {
+            throw new Error('Error fetching .env file');
+          }
+        })
+        .then(function(content) {
+          var envVariables = parseEnvFile(content);
+
+          // Display the environment variables
+          Object.keys(envVariables).forEach(function(key) {
+            var value = envVariables[key];
+            var variableElement = document.createElement('div');
+            variableElement.className = 'variable';
+            variableElement.innerHTML = '<span class="name">' + key + ':</span> <span class="value">' + value + '</span>';
+            document.body.appendChild(variableElement);
+          });
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    </script>
+  </div>
+</body>
+</html>

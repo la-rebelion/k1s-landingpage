@@ -1,0 +1,24 @@
+version: "3"
+services:
+  k1s-lp:
+    container_name: k1s-lp
+    image: adrianescutia/landingpage:0.1.0
+    env_file: .env
+    volumes:
+      # Getting error if mounting this folder, had to create as mounted volumes
+      - app_public:/usr/local/apache2/htdocs/
+    ports:
+      - "3000:80"
+    labels:
+      kompose.service.type: NodePort
+
+volumes:
+  app_public:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/public-html
+      o: bind
+
+# kompose convert -f ../docker-compose-k8s.yaml -o k1s-lp.yaml
+# kubectl apply -f k1s-lp.yaml

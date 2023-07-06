@@ -1,0 +1,134 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-k8s.yaml -o k1s-lp.yaml
+        kompose.service.type: NodePort
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: k1s-lp
+      name: k1s-lp
+    spec:
+      ports:
+        - name: "3000"
+          port: 3000
+          targetPort: 80
+      selector:
+        io.kompose.service: k1s-lp
+      type: NodePort
+    status:
+      loadBalancer: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-k8s.yaml -o k1s-lp.yaml
+        kompose.service.type: NodePort
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: k1s-lp
+      name: k1s-lp
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: k1s-lp
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose-k8s.yaml -o k1s-lp.yaml
+            kompose.service.type: NodePort
+            kompose.version: 1.26.0 (40646f47)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: k1s-lp
+        spec:
+          containers:
+            - env:
+                - name: APP_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      key: APP_HOST
+                      name: env
+                - name: APP_PATH
+                  valueFrom:
+                    configMapKeyRef:
+                      key: APP_PATH
+                      name: env
+                - name: COMPOSE_PROJECT_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: COMPOSE_PROJECT_NAME
+                      name: env
+                - name: DOCKER_USER_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DOCKER_USER_NAME
+                      name: env
+                - name: IMAGE_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: IMAGE_NAME
+                      name: env
+                - name: IMAGE_VERSION
+                  valueFrom:
+                    configMapKeyRef:
+                      key: IMAGE_VERSION
+                      name: env
+                - name: PROXY_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      key: PROXY_HOST
+                      name: env
+              image: adrianescutia/landingpage:0.1.0
+              name: k1s-lp
+              ports:
+                - containerPort: 80
+              resources: {}
+              volumeMounts:
+                - mountPath: /usr/local/apache2/htdocs/
+                  name: app-public
+          restartPolicy: Always
+          volumes:
+            - name: app-public
+              persistentVolumeClaim:
+                claimName: app-public
+    status: {}
+  - apiVersion: v1
+    data:
+      APP_HOST: 172.18.18.100
+      APP_PATH: ""
+      COMPOSE_PROJECT_NAME: k1s-lp
+      DOCKER_USER_NAME: adrianescutia
+      IMAGE_NAME: landingpage
+      IMAGE_VERSION: 0.1.0
+      PROXY_HOST: 172.18.18.2
+    kind: ConfigMap
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: k1s-lp-env
+      name: env
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: app-public
+      name: app-public
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Mi
+    status: {}
+kind: List
+metadata: {}
+

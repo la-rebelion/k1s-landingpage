@@ -31,6 +31,6 @@ networks:
           gateway: 172.18.18.1
 
 #https://docs.docker.com/compose/environment-variables/set-environment-variables/#cli
-#docker compose --env-file .env --project-name k1s-lp up -d
+#docker compose --env-file ~/.la-rebelion/.env-landingpage --project-name k1s-lp up -d
 #docker compose --project-name k1s-lp up -d
 #docker network create --subnet=172.18.18.0/24 lr-network
