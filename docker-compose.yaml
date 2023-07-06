@@ -4,7 +4,7 @@ services:
     container_name: k1s-lp
     image: "${DOCKER_USER_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}"
     restart: unless-stopped
-    env_file: ${APP_PATH}/.env
+      #env_file: ${APP_PATH}/.env
     volumes:
       # Getting error if mounting these folders, had to create as mounted volumes
       - app_public:/usr/local/apache2/htdocs/
